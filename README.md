@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B)
-![Anthropic API](https://img.shields.io/badge/powered%20by-Claude-D97757)
+![Anthropic API](https://img.shields.io/badge/powered%20by-Anthropic%20API-D97757)
 
 Converts informal draft text into clear, professional communication -
 available both as a CLI tool and a web app.

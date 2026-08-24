@@ -1,53 +1,26 @@
-import os
-from anthropic import Anthropic
-from dotenv import load_dotenv
+"""
+CLI entry point for text-professionalizer.
+Run: python main.py
+"""
 
-load_dotenv()
-
-MODEL_NAME = "claude-sonnet-5"
-
-SYSTEM_PROMPT = (
-    "You are an editor. Rewrite the user's rough, informal text into clear, "
-    "professional language suitable for a business email or report. "
-    "Keep the original meaning and the original language (if the input is "
-    "in Greek, reply in Greek; if English, reply in English). "
-    "Return ONLY the rewritten text, with no explanation or preamble."
-)
+import sys
+from professionalizer import professionalize, ProfessionalizerError, TONE_PROMPTS
 
 
-def make_professional(rough_text):
-    api_key = os.getenv("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise ValueError(
-            "Missing ANTHROPIC_API_KEY. Create a .env file with "
-            "ANTHROPIC_API_KEY=your_key_here"
-        )
+def main() -> None:
+    print("=== Text Professionalizer ===")
+    print(f"Available tones: {', '.join(TONE_PROMPTS)}\n")
 
-    client = Anthropic(api_key=api_key)
+    text = input("Enter your draft text:\n> ").strip()
+    tone = input(f"Tone [{'/'.join(TONE_PROMPTS)}] (Enter = formal): ").strip() or "formal"
 
-    response = client.messages.create(
-        model=MODEL_NAME,
-        max_tokens=500,
-        temperature=0.3,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": rough_text}],
-    )
+    try:
+        result = professionalize(text, tone=tone)
+    except ProfessionalizerError as exc:
+        print(f"\nError: {exc}", file=sys.stderr)
+        sys.exit(1)
 
-    return response.content[0].text.strip()
-
-
-def main():
-    print("Type your draft text and press Enter:\n")
-    rough_text = input("> ").strip()
-
-    if not rough_text:
-        print("No text provided.")
-        return
-
-    print("\nProcessing...\n")
-    result = make_professional(rough_text)
-
-    print("Professional version:")
+    print("\n--- Result ---")
     print(result)
 
 

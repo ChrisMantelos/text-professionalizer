@@ -7,8 +7,7 @@
 Converts informal draft text into clear, professional communication -
 available both as a CLI tool and a web app.
 
-Note: no live demo is deployed yet. See "Deploying the web demo" below for
-how to get one and add the link here.
+**[Try it live](https://text-professionalizer-cm5su4jbqzwfcevd9p6vjk.streamlit.app)**
 
 ---
 

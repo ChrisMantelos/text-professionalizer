@@ -1,8 +1,3 @@
-"""
-Core logic for text-professionalizer.
-Separated from the CLI/UI layer so it can be reused by both.
-"""
-
 import os
 from anthropic import Anthropic, APIError, APIConnectionError
 
@@ -33,21 +28,6 @@ class ProfessionalizerError(Exception):
 
 
 def professionalize(text: str, tone: str = "formal", api_key: str | None = None) -> str:
-    """
-    Convert informal draft text into polished business communication.
-
-    Args:
-        text: The informal input text. Must be non-empty.
-        tone: One of "formal", "friendly", "concise".
-        api_key: Anthropic API key. Falls back to ANTHROPIC_API_KEY env var.
-
-    Returns:
-        The rewritten text.
-
-    Raises:
-        ProfessionalizerError: on empty input, bad tone, missing key,
-        or API failure - always with a message safe to show the user.
-    """
     if not text or not text.strip():
         raise ProfessionalizerError("Input text cannot be empty.")
 

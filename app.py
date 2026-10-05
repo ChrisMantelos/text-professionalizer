@@ -1,13 +1,14 @@
-"""
-Streamlit web UI for text-professionalizer.
-Run locally:   streamlit run app.py
-Deploy free:   share.streamlit.io (connect this GitHub repo)
-"""
-
 import streamlit as st
+from dotenv import load_dotenv
 from professionalizer import professionalize, ProfessionalizerError, TONE_PROMPTS
+from history import add_to_history
+
+load_dotenv()
 
 st.set_page_config(page_title="Text Professionalizer", layout="centered")
+
+if "history" not in st.session_state:
+    st.session_state["history"] = []
 
 st.title("Text Professionalizer")
 st.caption(
@@ -35,17 +36,23 @@ draft = st.text_area(
     placeholder="e.g. hey sorry the report is gonna be a bit late, ill send it later today",
 )
 
-col1, col2 = st.columns([1, 4])
-with col1:
-    submitted = st.button("Convert", type="primary", use_container_width=True)
-
-if submitted:
+if st.button("Convert", type="primary"):
     try:
         with st.spinner("Processing..."):
             result = professionalize(draft, tone=tone, api_key=api_key or None)
     except ProfessionalizerError as exc:
         st.error(str(exc))
     else:
+        st.session_state["history"] = add_to_history(
+            st.session_state["history"], draft, tone, result
+        )
         st.subheader("Result")
-        st.text_area("Professional version", value=result, height=160, label_visibility="collapsed")
-        st.button("Copy", help="Select the text above and press Ctrl+C")
+        st.code(result, language=None, wrap_lines=True)
+        st.caption("Use the copy icon in the top-right corner of the box to copy the text.")
+
+if st.session_state["history"]:
+    with st.expander("Recent conversions"):
+        for entry in st.session_state["history"]:
+            st.markdown(f"**Tone: {entry['tone']}**")
+            st.text(entry["original"])
+            st.code(entry["result"], language=None, wrap_lines=True)
